@@ -51,7 +51,12 @@ options = {
 
 scraper = FacebookScraper()
 if args.proxy:
-    scraper.set_proxy(args.proxy)
+    scraper.requests_kwargs.update({
+        'proxies': {
+            'http': args.proxy,
+            'https': args.proxy,
+        }
+    })
 
 for post in scraper.get_group_posts(args.group_id, **options):
     print(f'{count + 1} => {post["post_id"]}, {post["time"]}')
