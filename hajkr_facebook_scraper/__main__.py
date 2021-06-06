@@ -1,9 +1,10 @@
 from facebook_scraper import *
+from facebook_scraper.exceptions import LoginRequired
 import argparse
 import logging
 
 
-def enable_logging_to_file():
+def enable_logging():
     logger = logging.getLogger('facebook_scraper')
     logger.setLevel(logging.DEBUG)
     formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s', '%m-%d-%Y %H:%M:%S')
@@ -12,7 +13,12 @@ def enable_logging_to_file():
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(formatter)
 
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.DEBUG)
+    stream_handler.setFormatter(formatter)
+
     logger.addHandler(file_handler)
+    logger.addHandler(stream_handler)
 
 
 def write_post_to_disk(post):
@@ -22,11 +28,17 @@ def write_post_to_disk(post):
 
 
 def write_posts_to_disk(posts, filename):
-    keys = posts[0].keys()
+    keys = list(posts[0].keys())
+    for post in posts:
+        for key in post.keys():
+            if key not in keys:
+                keys.append(key)
+
     with open(filename, 'w', encoding=locale.getpreferredencoding()) as output_file:
         dict_writer = csv.DictWriter(output_file, keys)
         dict_writer.writeheader()
         dict_writer.writerows(posts)
+
 
 def run():
     parser = argparse.ArgumentParser()
@@ -42,7 +54,7 @@ def run():
     print(args)
 
     if args.logging:
-        enable_logging_to_file()
+        enable_logging()
 
     count = 0
     list_of_posts = []
@@ -59,22 +71,29 @@ def run():
             }
         })
 
+    try:
+        for post in scraper.get_group_posts(args.group_id, **options):
+            logger.info(f'{count + 1} => {post["post_id"]}, {post["time"]}')
 
-    for post in scraper.get_group_posts(args.group_id, **options):
-        print(f'{count + 1} => {post["post_id"]}, {post["time"]}')
+            if args.debug:
+                write_post_to_disk(post)
 
-        if args.debug:
-            write_post_to_disk(post)
+            list_of_posts.append(post)
 
-        list_of_posts.append(post)
+            count += 1
+    except LoginRequired:
+        logger.error("Login is required.")
 
-        count += 1
+        if count == 0:
+            logger.warning("Login required. No posts found. Is your IP banend?")
+            exit(1)
 
     if count == 0:
         logger.warning("No posts found. Is your IP banend?")
         exit(1)
 
     write_posts_to_disk(list_of_posts, args.filename)
+
 
 if __name__ == '__main__':
     run()
