@@ -35,12 +35,13 @@ def run():
     parser.add_argument('--proxy', type=str, help="Proxy server address", default=None)
     parser.add_argument('--pages', type=int, help="Number of pages to download", default=5)
     parser.add_argument('--debug', type=bool, help="Enable debug", default=False)
+    parser.add_argument('--logging', type=bool, help="Enable logging", default=False)
     parser.add_argument('--filename', type=str, help="Output file", default='posts.csv')
 
     args = parser.parse_args()
     print(args)
 
-    if args.debug:
+    if args.logging:
         enable_logging_to_file()
 
     count = 0
