@@ -14,6 +14,6 @@ RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-
 # Install python libraries
 COPY pyproject.toml $APP_HOME/
 COPY poetry.lock $APP_HOME/
-RUN poetry install
+RUN $HOME/.poetry/bin/poetry install
 
 COPY . $APP_HOME/
