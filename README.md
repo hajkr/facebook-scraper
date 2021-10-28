@@ -19,3 +19,12 @@ make run
 make to_container
 poetry run hajkr-facebook-scraper
 ```
+
+## Publish
+
+```bash
+make to_container
+poetry version patch # major|minor
+poetry build
+poetry publish
+```
