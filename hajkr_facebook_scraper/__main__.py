@@ -45,6 +45,8 @@ def run():
 
     parser.add_argument('group_id', type=str, help="Facebook group id")
     parser.add_argument('--proxy', type=str, help="Proxy server address", default=None)
+    parser.add_argument('--c_user', type=str, help="Facebook cookie c_user", default=None)
+    parser.add_argument('--xs', type=str, help="Facebook cookie xs", default=None)
     parser.add_argument('--pages', type=int, help="Number of pages to download", default=5)
     parser.add_argument('--debug', type=bool, help="Enable debug", default=False)
     parser.add_argument('--logging', type=bool, help="Enable logging", default=False)
@@ -64,12 +66,20 @@ def run():
 
     scraper = FacebookScraper()
     if args.proxy:
+        logger.info(f'Proxy: {args.proxy}')
         scraper.requests_kwargs.update({
             'proxies': {
                 'http': args.proxy,
                 'https': args.proxy,
             }
         })
+
+    if args.c_user:
+        logger.info(f'Cookie c_user: {args.c_user}')
+        scraper.session.cookies.set("c_user", args.c_user)
+    if args.xs:
+        logger.info(f'Cookie xs: {args.xs}')
+        scraper.session.cookies.set("xs", args.xs)
 
     try:
         for post in scraper.get_group_posts(args.group_id, **options):
