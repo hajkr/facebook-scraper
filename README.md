@@ -18,6 +18,9 @@ make run
 ```bash
 make to_container
 poetry run hajkr-facebook-scraper
+
+# real life example
+poetry run hajkr-facebook-scraper 200278167400125 --logging true
 ```
 
 ## Publish
@@ -27,4 +30,11 @@ make to_container
 poetry version patch # major|minor
 poetry build
 poetry publish
+```
+
+## Update facebook-scraper
+
+```bash
+make to_container
+poetry update facebook-scraper
 ```

@@ -110,7 +110,7 @@ python-versions = "*"
 
 [[package]]
 name = "facebook-scraper"
-version = "0.2.58"
+version = "0.2.59"
 description = "Scrape Facebook public pages without an API key"
 category = "main"
 optional = false
